@@ -87,28 +87,23 @@ He agrupado algunos datos, porque los tamaños de la muestra en cada subgrupo so
 
 # Datos para metodo
 
+Aquí están las tablas con promedios, SD, minimo y maximo para las variables numericas (promedio y edad).
+
+Para las demas variables están los conteos.
+
 ```{r}
-totales %>% count(sexo)
-mean(totales$edad)
-sd(totales$edad)
-min(totales$edad)
-max(totales$edad)
-totales %>% count(estado_civil)
-totales %>% count(universidad)
-totales %>% count(grupo_carrera)
-totales %>% count(ciclo)
-mean(totales$promedio, na.rm = T)
-sd(totales$promedio, na.rm = T)
-min(totales$promedio, na.rm = T)
-max(totales$promedio, na.rm = T)
-totales %>% count(nse)
-totales %>% count(roles)
-totales %>% count(vive_con)
-totales %>% count(ed_padre)
-totales %>% count(ed_madre)
-totales %>% count(sit_laboral_padres)
-totales %>% count(region)
-totales %>% count(tipo_universidad)
+library(tableone)
+vars <- c("sexo", "edad", "estado_civil", "universidad", "grupo_carrera", "ciclo",
+          "promedio", "nse", "roles", "vive_con", "ed_padre", "ed_madre",
+          "sit_laboral_padres", "region", "tipo_universidad")
+cat_vars <- c("sexo", "estado_civil", "universidad", "grupo_carrera", "ciclo",
+              "nse", "roles", "vive_con", "ed_padre", "ed_madre",
+              "sit_laboral_padres", "region", "tipo_universidad")
+
+cont_vars <- c("edad", "promedio")
+table1 <- CreateTableOne(vars = vars, data = totales, factorVars = cat_vars)
+
+print(table1, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
 ```
 
 # Missing data
@@ -118,7 +113,28 @@ Vamos a hacer listwise deletion. Voy a seleccionar todas las variables que entra
 Las variables demograficas que quedan son: `sexo`    `edad` `estado_civil` `grupo_carrera`  `nse`        `ed_padre`     `ed_madre` `region` `tipo_universidad`
 
 ```{r}
-totales = totales %>% select(-universidad, -ciclo, -roles, -vive_con, -sit_laboral_padres) %>% drop_na()
+totales2 = totales %>% select(-universidad, -ciclo, -roles, -vive_con, -sit_laboral_padres) %>% drop_na()
+
+totales2 = totales2 %>% left_join(totales)
+totales = totales2
+
+```
+
+# Descriptivos de la gente que entro en la muestra
+
+```{r}
+library(tableone)
+vars <- c("sexo", "edad", "estado_civil", "universidad", "grupo_carrera", "ciclo",
+          "promedio", "nse", "roles", "vive_con", "ed_padre", "ed_madre",
+          "sit_laboral_padres", "region", "tipo_universidad")
+cat_vars <- c("sexo", "estado_civil", "universidad", "grupo_carrera", "ciclo",
+              "nse", "roles", "vive_con", "ed_padre", "ed_madre",
+              "sit_laboral_padres", "region", "tipo_universidad")
+
+cont_vars <- c("edad", "promedio")
+table1 <- CreateTableOne(vars = vars, data = totales, factorVars = cat_vars)
+
+print(table1, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
 ```
 
 # Correlations
@@ -310,3 +326,4 @@ walk(results_split, function(df) {
     print()
 })
 ```
+
