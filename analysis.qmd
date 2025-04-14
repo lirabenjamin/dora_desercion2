@@ -79,11 +79,26 @@ data = data %>%
         ed_padre = ifelse(ed_padre == "secundaria", "secundaria o menos", ed_padre),
         ed_madre = ifelse(ed_madre == "secundaria", "secundaria o menos", ed_madre)
         ) %>%
-    mutate_at(vars(desercion, habilidades_sociales:metas), parse_number)
+    mutate_at(vars(desercion, habilidades_sociales:commitment), parse_number)
 totales = data %>% select(sexo:tipo_universidad, desercion, habilidades_sociales:metas)
 ```
 
 He agrupado algunos datos, porque los tamaños de la muestra en cada subgrupo son muy pequeños. Cuando no se usan para el analisis, los he mantenido (e.g., `vive_con`, `situacion_laboral_padres`).
+
+# La tabla de frontiers
+
+Voy a producir la tabla de correlaciones sin listwise deletion, solo con pairwise.
+
+```{r}
+data %>%
+  mutate(
+    sexo = ifelse(sexo == "Mujer", 1, 0), 
+    tutoria = ifelse(tutoria == "si", 1, 0)
+  ) %>%
+  select(edad, sexo, tutoria, promedio, habilidades_sociales, soporte_social, planear, metas, internal_control, expectance, value,  hopes, fears, exploration, commitment, desercion) %>%
+  corstars() %>%
+  gt()
+```
 
 # Datos para metodo
 
